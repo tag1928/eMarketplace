@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="js/script.js"></script>
+    <title>eMarketplace</title>
+</head>
+<body>
+<label for="page_number">
+    <input id="page_number" type="number" min="1" value="1" step="1">
+</label>
+<input id="load_button" type="button" value="Load listings" onclick="loadListings()">
+<form action="new-listing.html">
+    <input type="submit" value="Create a listing">
+</form>
+<div id="listings"></div>
+</body>
+</html>

@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity(name = "listing")
+@Entity(name = "listings")
 public class Listing
 {
 	@Id
@@ -17,5 +17,5 @@ public class Listing
 	@Column(name = "price") private double price;
 	@Column(name = "description") private String description;
 	@Column(name = "submission_time") private String submissionTime;
-	@Column(name = "photo_url") private String photoUrl;
+	@Column(name = "photo_url") private String photoURL;
 }
