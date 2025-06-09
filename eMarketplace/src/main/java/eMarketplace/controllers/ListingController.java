@@ -5,6 +5,7 @@ import eMarketplace.services.ListingService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,17 +22,10 @@ public class ListingController
 		return ResponseEntity.ok(service.getPage(pageNumber, 6));
 	}
 
-	@GetMapping("/listing.html")
-	public ResponseEntity<Void> asdf()
-	{
-		System.out.println("laskjdf");
-		return ResponseEntity.ok().build();
-	}
-
 	@PostMapping
-	public ResponseEntity<Void> add(@RequestBody ListingJson json)
+	public ResponseEntity<Void> add(@RequestBody ListingJson json, @RequestParam("file") MultipartFile file)
 	{
-		service.add(json);
+		service.add(json, file);
 		return ResponseEntity.noContent().build();
 	}
 }

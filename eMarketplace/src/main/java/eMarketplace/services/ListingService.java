@@ -8,7 +8,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +25,7 @@ import java.util.UUID;
 public class ListingService
 {
 	private final ListingRepository repository;
+	private final Path root = Paths.get("uploads");
 
 	private void printListing(Listing listing)
 	{
@@ -32,34 +39,57 @@ public class ListingService
 
 	private Listing convert(ListingJson json)
 	{
-		Listing output = new Listing();
-
-		output.setID(UUID.randomUUID().toString());
-		output.setName(json.getName());
-		output.setPrice(json.getPrice());
-		output.setDescription(json.getDescription());
-		output.setSubmissionTime(Instant.now().toString());
-		output.setPhotoURL(json.getPhotoURL());
-
-		return output;
+		return new Listing
+			(
+				UUID.randomUUID().toString(),
+				json.getName(),
+				json.getPrice(),
+				json.getDescription(),
+				Instant.now().toString(),
+				"photo"
+			);
 	}
 
 	private ListingJson convert(Listing listing)
 	{
-		ListingJson output = new ListingJson();
+		return new ListingJson
+			(
+				listing.getName(),
+				listing.getPrice(),
+				listing.getDescription()
+			);
+	}
 
-		output.setName(listing.getName());
-		output.setPrice(listing.getPrice());
-		output.setDescription(listing.getDescription());
-		output.setPhotoURL(listing.getPhotoURL());
-
-		return output;
+	public void init()
+	{
+		try
+		{
+			Files.createDirectory(root);
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException("Could not initialize folder for upload!");
+		}
 	}
 
 	@Transactional
-	public void add(ListingJson json)
+	public void add(ListingJson json, MultipartFile file)
 	{
+		try
+		{
+			Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+		}
+		catch (Exception e)
+		{
+			if (e instanceof FileAlreadyExistsException)
+			{
+				throw new RuntimeException("A file of that name already exists.");
+			}
+			throw new RuntimeException(e.getMessage());
+		}
+
 		Listing listing = convert(json);
+		listing.setPhotoURL(file.getOriginalFilename());
 		repository.save(listing);
 
 		printListing(listing);

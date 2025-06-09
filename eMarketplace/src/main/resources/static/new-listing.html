@@ -2,18 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="js/upload_listing.js"></script>
     <title>Create a listing</title>
 </head>
 <body>
 <h1>Create a listing:</h1>
-<form action="index.html">
-  <label>
-    Name of the product: <input id="product_name" type="text">
-  </label>
-  <label>
-    Description: <input id="product_description" type="text">
-  </label>
-  <input type="submit" onclick="uploadPosting()">
+<form id="create_listing" action="/listing" method="post" enctype="multipart/form-data">
+  <label>Name of the product: <input id="product_name" type="text"></label>
+  <label>Description: <input id="product_description" type="text"></label>
+    <input type="file" name="file">
+    <input type="submit" value="Create listing">
 </form>
 </body>
 </html>

@@ -16,18 +16,3 @@ async function loadListings()
             document.getElementById("listings").innerHTML = string;
         });
 }
-
-async function uploadPosting()
-{
-    const url = "http://localhost:8080/listing";
-    const productName = document.getElementById("product_name").value;
-    const productDescription = document.getElementById("product_description").value;
-    const requestBody =
-        {
-            name: productName,
-            description: productDescription
-        };
-
-    const response = fetch(url, {method: POST, body: JSON.stringify(requestBody)});
-    console.log(response);
-}
