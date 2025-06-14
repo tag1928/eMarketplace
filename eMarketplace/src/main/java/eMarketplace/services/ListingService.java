@@ -37,17 +37,29 @@ public class ListingService
 		System.out.println("Photo URL: " + listing.getPhotoURL());
 	}
 
-	private Listing convert(ListingJson json)
+	public void init()
 	{
-		return new Listing
-			(
-				UUID.randomUUID().toString(),
-				json.getName(),
-				json.getPrice(),
-				json.getDescription(),
-				Instant.now().toString(),
-				"photo"
-			);
+		try
+		{
+			Files.createDirectories(root);
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException("Could not initialize folder for upload!");
+		}
+	}
+
+	private Listing convert(ListingJson json, String photoURL)
+	{
+		Listing listing = new Listing();
+		listing.setID(UUID.randomUUID().toString());
+		listing.setName(json.getName());
+		listing.setPrice(json.getPrice());
+		listing.setDescription(json.getDescription());
+		listing.setSubmissionTime(Instant.now().toString());
+		listing.setPhotoURL(photoURL);
+
+		return listing;
 	}
 
 	private ListingJson convert(Listing listing)
@@ -60,24 +72,21 @@ public class ListingService
 			);
 	}
 
-	public void init()
+	private boolean isBad(ListingJson json)
 	{
-		try
-		{
-			Files.createDirectory(root);
-		}
-		catch (IOException e)
-		{
-			throw new RuntimeException("Could not initialize folder for upload!");
-		}
+		return json.getName() == null || json.getName().isBlank() ||
+			json.getDescription() == null || json.getDescription().isBlank();
 	}
 
 	@Transactional
-	public void add(ListingJson json, MultipartFile file)
+	public void addListing(ListingJson json, MultipartFile file) throws IllegalArgumentException
 	{
+		if (isBad(json) || file.getOriginalFilename() == null || file.getOriginalFilename().isBlank())
+			throw new IllegalArgumentException("Bad listing request");
+
 		try
 		{
-			Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+			Files.copy(file.getInputStream(), root.resolve(file.getOriginalFilename()));
 		}
 		catch (Exception e)
 		{
@@ -88,10 +97,9 @@ public class ListingService
 			throw new RuntimeException(e.getMessage());
 		}
 
-		Listing listing = convert(json);
-		listing.setPhotoURL(file.getOriginalFilename());
+		Listing listing = convert(json, file.getOriginalFilename());
 		repository.save(listing);
-
+		System.out.println("New listing: ");
 		printListing(listing);
 	}
 

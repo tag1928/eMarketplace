@@ -7,9 +7,10 @@
 </head>
 <body>
 <h1>Create a listing:</h1>
-<form id="create_listing" action="/listing" method="post" enctype="multipart/form-data">
-  <label>Name of the product: <input id="product_name" type="text"></label>
-  <label>Description: <input id="product_description" type="text"></label>
+<form id="create_listing" action="/listing/photo" method="post" enctype="multipart/form-data">
+    <label>Name of the product: <input id="product_name" type="text"></label>
+    <label>Price: <input id="product_price" type="number"></label>
+    <label>Description: <input id="product_description" type="text"></label>
     <input type="file" name="file">
     <input type="submit" value="Create listing">
 </form>
