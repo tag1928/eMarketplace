@@ -22,4 +22,5 @@ public class Listing
 	@Column(name = "description") private String description;
 	@Column(name = "submission_time") private String submissionTime;
 	@Column(name = "photo_url") private String photoURL;
+	@Column(name = "author_username") private String authorUsername;
 }

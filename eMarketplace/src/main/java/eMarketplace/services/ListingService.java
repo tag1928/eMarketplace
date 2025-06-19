@@ -35,6 +35,7 @@ public class ListingService
 		System.out.println("Description: " + listing.getDescription());
 		System.out.println("Submission time: " + listing.getSubmissionTime());
 		System.out.println("Photo URL: " + listing.getPhotoURL());
+		System.out.println("Author username: " + listing.getAuthorUsername());
 	}
 
 	public void init()
@@ -54,10 +55,11 @@ public class ListingService
 		Listing listing = new Listing();
 		listing.setID(UUID.randomUUID().toString());
 		listing.setName(json.getName());
-		listing.setPrice(json.getPrice());
+		listing.setPrice(Double.parseDouble(json.getPrice()));
 		listing.setDescription(json.getDescription());
 		listing.setSubmissionTime(Instant.now().toString());
 		listing.setPhotoURL(photoURL);
+		listing.setAuthorUsername(json.getAuthorUsername());
 
 		return listing;
 	}
@@ -67,15 +69,17 @@ public class ListingService
 		return new ListingJson
 			(
 				listing.getName(),
-				listing.getPrice(),
-				listing.getDescription()
+				listing.getPrice() + "",
+				listing.getDescription(),
+				listing.getAuthorUsername()
 			);
 	}
 
 	private boolean isBad(ListingJson json)
 	{
 		return json.getName() == null || json.getName().isBlank() ||
-			json.getDescription() == null || json.getDescription().isBlank();
+			json.getDescription() == null || json.getDescription().isBlank() ||
+			json.getAuthorUsername() == null || json.getAuthorUsername().isBlank();
 	}
 
 	@Transactional

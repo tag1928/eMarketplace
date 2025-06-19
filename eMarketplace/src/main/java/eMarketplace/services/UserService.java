@@ -4,17 +4,21 @@ import eMarketplace.dto.UserJson;
 import eMarketplace.models.User;
 import eMarketplace.repositories.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Example;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Year;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @AllArgsConstructor
 @Service
 public class UserService
 {
 	private final UserRepository repository;
+	private final Pattern pattern = Pattern.compile("^\\w{8,20}$");
+	private final EmailValidator emailValidator = EmailValidator.getInstance();
 
 	private void printUser(User user)
 	{
@@ -39,18 +43,31 @@ public class UserService
 
 	private boolean isBad(UserJson json)
 	{
-		return json.getUsername() == null || json.getUsername().isBlank() ||
-			json.getEmail() == null || json.getEmail().isBlank() ||
+		if (json.getBirthday() == null || json.getBirthday().isBlank()) return true;
+		if (json.getEmail() == null || json.getEmail().isBlank()) return true;
+
+		int year = Integer.parseInt(json.getBirthday().substring(0, 4));
+
+		return json.getUsername() == null || json.getUsername().isBlank() || !pattern.matcher(json.getUsername()).matches() ||
+			!emailValidator.isValid(json.getEmail()) ||
 			json.getPassword() == null || json.getPassword().isBlank() ||
-			json.getBirthday() == null || json.getBirthday().isBlank();
+			Year.now().getValue() - year < 13;
 	}
 
 	@Transactional
 	public void add(UserJson json) throws IllegalArgumentException
 	{
-		if (isBad(json)) throw new IllegalArgumentException("Bad user request");
+		if (isBad(json))
+			throw new IllegalArgumentException("Bad user request");
+
+		if (repository.findByUsername(json.getUsername()) != null)
+			throw new IllegalArgumentException("Username is taken");
+
+		if (repository.findByEmail(json.getEmail()) != null)
+			throw new IllegalArgumentException("Email already in use");
 
 		User user = convert(json);
+
 		repository.save(user);
 		System.out.println("New user: ");
 		printUser(user);
@@ -58,11 +75,9 @@ public class UserService
 
 	public String authenticate(UserJson json) throws IllegalAccessException
 	{
-		User user = convert(json);
+		User user = repository.findByUsername(json.getUsername());
 
-		User query = repository.findByUsername(user.getUsername());
-
-		if (user.getPassword().equals(query.getPassword())) return "token";
+		if (json.getPassword().equals(user.getPassword())) return "token";
 
 		throw new IllegalAccessException("Wrong credentials");
 	}

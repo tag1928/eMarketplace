@@ -3,14 +3,13 @@ package eMarketplace.controllers;
 import eMarketplace.dto.UserJson;
 import eMarketplace.services.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
+@CrossOrigin
 @RequestMapping("/user")
 public class UserController
 {
@@ -26,6 +25,7 @@ public class UserController
 		}
 		catch (IllegalArgumentException e)
 		{
+			System.err.println(e.getMessage());
 			return ResponseEntity.badRequest().build();
 		}
 	}
@@ -40,7 +40,7 @@ public class UserController
 		}
 		catch (IllegalAccessException e)
 		{
-			return ResponseEntity.status(403).build();
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 	}
 }

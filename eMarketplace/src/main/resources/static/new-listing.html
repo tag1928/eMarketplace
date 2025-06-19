@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="js/upload_listing.js"></script>
-    <title>Create a listing</title>
+    <script src="js/new-listing.js" defer></script>
+    <title>Upload a listing</title>
 </head>
 <body>
-<h1>Create a listing:</h1>
-<form id="create_listing" action="/listing/photo" method="post" enctype="multipart/form-data">
+<h1>Upload a listing:</h1>
+<form id="form">
     <label>Name of the product: <input id="product_name" type="text"></label>
-    <label>Price: <input id="product_price" type="number"></label>
-    <label>Description: <input id="product_description" type="text"></label>
-    <input type="file" name="file">
-    <input type="submit" value="Create listing">
+    <label>Price: <input id="price" type="number"></label>
+    <label>Description: <input id="description" type="text"></label>
+    <label>Upload the product photo: <input id="file" type="file"></label>
+    <input type="submit" value="Post listing">
 </form>
 </body>
 </html>
