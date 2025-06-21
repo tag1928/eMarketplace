@@ -25,10 +25,10 @@ public class ListingController
 		service.init();
 	}
 
-	@GetMapping("/{pageNumber}")
-	public ResponseEntity<List<ListingJson>> get(@PathVariable int pageNumber)
+	@GetMapping("/{pageNumber}/{sortBy}")
+	public ResponseEntity<List<ListingJson>> get(@PathVariable int pageNumber, @PathVariable String sortBy)
 	{
-		return ResponseEntity.ok(service.getPage(pageNumber, 6));
+		return ResponseEntity.ok(service.getPage(pageNumber - 1, 6, sortBy));
 	}
 
 	@PostMapping

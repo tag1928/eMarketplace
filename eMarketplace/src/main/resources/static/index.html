@@ -2,17 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="js/script.js"></script>
+    <script src="js/index.js" defer></script>
     <title>eMarketplace</title>
 </head>
 <body>
-<label for="page_number">
-    <input id="page_number" type="number" min="1" value="1" step="1">
+<label>Listing page no. <input id="page_number" type="number" min="1" value="1" step="1"></label>
+<label>Order by:
+    <select id="sort_by">
+        <option value="date_desc">Newest first</option>
+        <option value="date_asc">Oldest first</option>
+    </select>
 </label>
-<input id="load_button" type="button" value="Load listings" onclick="loadListings()">
+<input id="load_listings_button" type="button" value="Load listings">
 <form action="new-listing.html">
     <input type="submit" value="Create a listing">
 </form>
+<h1>Listings: </h1>
 <div id="listings"></div>
 </body>
 </html>

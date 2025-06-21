@@ -1,8 +1,20 @@
-form.addEventListener("submit", handleSubmit);
+submit_button.addEventListener("click", handleSubmit);
 
-async function handleSubmit(event)
+const url = "/listing";
+
+async function handleSubmit()
 {
-    event.preventDefault();
+    if (product_name.value.trim() === "")
+    {
+        alert("Product name is required");
+        return;
+    }
+
+    if (price.value.trim() === "")
+    {
+        alert("Price is required");
+        return;
+    }
 
     const files = file.files;
     const formData = new FormData();
@@ -14,24 +26,25 @@ async function handleSubmit(event)
 
     const json =
     {
-        name: product_name.value,
-        price: price.value,
-        description: description.value,
-        author_username: localStorage.getItem("username")
+        name: product_name.value.trim(),
+        price: price.value.trim(),
+        description: description.value.trim(),
+        author_username: localStorage.username
     }
 
     formData.append("json", JSON.stringify(json));
 
-    console.log(formData);
-
-    const url = "/listing";
-    const requestContent = {method: "POST", body: formData};
+    const requestContent =
+    {
+        method: "POST",
+        body: formData
+    };
 
     const response = await fetch(url, requestContent);
 
     if (response.status === 400)
     {
-        alert("Username, price and a photo are required");
+        alert("Something went wrong");
         return;
     }
 

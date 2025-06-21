@@ -7,12 +7,10 @@
 </head>
 <body>
 <h1>Upload a listing:</h1>
-<form id="form">
-    <label>Name of the product: <input id="product_name" type="text"></label>
-    <label>Price: <input id="price" type="number"></label>
-    <label>Description: <input id="description" type="text"></label>
-    <label>Upload the product photo: <input id="file" type="file"></label>
-    <input type="submit" value="Post listing">
-</form>
+<label>Name of the product: <input id="product_name" type="text"></label>
+<label>Price: <input id="price" type="number" min="0" step="0.01"></label>
+<label>Description: <input id="description" type="text"></label>
+<label>Upload the product photo: <input id="file" type="file"></label>
+<input id="submit_button" type="button" value="Post listing">
 </body>
 </html>

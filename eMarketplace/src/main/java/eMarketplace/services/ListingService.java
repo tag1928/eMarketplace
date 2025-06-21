@@ -11,12 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,7 +57,7 @@ public class ListingService
 		listing.setName(json.getName());
 		listing.setPrice(Double.parseDouble(json.getPrice()));
 		listing.setDescription(json.getDescription());
-		listing.setSubmissionTime(Instant.now().toString());
+		listing.setSubmissionTime(Date.from(Instant.now()).toString());
 		listing.setPhotoURL(photoURL);
 		listing.setAuthorUsername(json.getAuthorUsername());
 
@@ -67,49 +67,52 @@ public class ListingService
 	private ListingJson convert(Listing listing)
 	{
 		return new ListingJson
-			(
-				listing.getName(),
-				listing.getPrice() + "",
-				listing.getDescription(),
-				listing.getAuthorUsername()
-			);
+		(
+			listing.getName(),
+			listing.getPrice() + "",
+			listing.getDescription(),
+			listing.getAuthorUsername()
+		);
 	}
 
 	private boolean isBad(ListingJson json)
 	{
 		return json.getName() == null || json.getName().isBlank() ||
-			json.getDescription() == null || json.getDescription().isBlank() ||
+			json.getPrice() == null || json.getPrice().isBlank() ||
 			json.getAuthorUsername() == null || json.getAuthorUsername().isBlank();
 	}
 
 	@Transactional
 	public void addListing(ListingJson json, MultipartFile file) throws IllegalArgumentException
 	{
-		if (isBad(json) || file.getOriginalFilename() == null || file.getOriginalFilename().isBlank())
+		if (isBad(json))
 			throw new IllegalArgumentException("Bad listing request");
+
+		String fileName = UUID.randomUUID().toString();
 
 		try
 		{
-			Files.copy(file.getInputStream(), root.resolve(file.getOriginalFilename()));
+			Files.copy(file.getInputStream(), root.resolve(fileName));
 		}
 		catch (Exception e)
 		{
-			if (e instanceof FileAlreadyExistsException)
-			{
-				throw new RuntimeException("A file of that name already exists.");
-			}
 			throw new RuntimeException(e.getMessage());
 		}
 
-		Listing listing = convert(json, file.getOriginalFilename());
+		Listing listing = convert(json, fileName);
 		repository.save(listing);
 		System.out.println("New listing: ");
 		printListing(listing);
 	}
 
-	public List<ListingJson> getPage(int pageNumber, int pageSize)
+	public List<ListingJson> getPage(int pageNumber, int pageSize, String sortBy)
 	{
-		Sort sort = Sort.by("submissionTime");
+		Sort sort;
+
+		if (sortBy.equals("date_desc")) sort = Sort.by("submissionTime").descending();
+		else if (sortBy.equals("date_asc")) sort = Sort.by("submissionTime").ascending();
+		else throw new IllegalArgumentException("Bad sort parameter");
+
 		PageRequest page = PageRequest.of(pageNumber, pageSize, sort);
 
 		List<Listing> query = repository.findAll(page).getContent();
