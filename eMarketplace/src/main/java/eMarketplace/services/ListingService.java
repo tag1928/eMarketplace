@@ -52,27 +52,24 @@ public class ListingService
 
 	private Listing convert(ListingJson json, String photoURL)
 	{
-		Listing listing = new Listing();
-		listing.setID(UUID.randomUUID().toString());
-		listing.setName(json.getName());
-		listing.setPrice(Double.parseDouble(json.getPrice()));
-		listing.setDescription(json.getDescription());
-		listing.setSubmissionTime(Date.from(Instant.now()).toString());
-		listing.setPhotoURL(photoURL);
-		listing.setAuthorUsername(json.getAuthorUsername());
-
-		return listing;
+		return Listing.builder()
+			.name(json.getName())
+			.price(Double.parseDouble(json.getPrice()))
+			.description(json.getDescription())
+			.submissionTime(Date.from(Instant.now()).toString())
+			.photoURL(photoURL)
+			.authorUsername(json.getAuthorUsername())
+			.build();
 	}
 
 	private ListingJson convert(Listing listing)
 	{
-		return new ListingJson
-		(
-			listing.getName(),
-			listing.getPrice() + "",
-			listing.getDescription(),
-			listing.getAuthorUsername()
-		);
+		return ListingJson.builder()
+			.name(listing.getName())
+			.price("" + listing.getPrice())
+			.description(listing.getDescription())
+			.authorUsername(listing.getAuthorUsername())
+			.build();
 	}
 
 	private boolean isBad(ListingJson json)
@@ -88,7 +85,7 @@ public class ListingService
 		if (isBad(json))
 			throw new IllegalArgumentException("Bad listing request");
 
-		String fileName = UUID.randomUUID().toString();
+		String fileName = UUID.randomUUID().toString() + ".jpg";
 
 		try
 		{

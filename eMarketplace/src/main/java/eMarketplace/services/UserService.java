@@ -31,14 +31,12 @@ public class UserService
 
 	private User convert(UserJson json)
 	{
-		User user = new User();
-		user.setID(UUID.randomUUID().toString());
-		user.setUsername(json.getUsername());
-		user.setEmail(json.getEmail());
-		user.setPassword(json.getPassword());
-		user.setBirthday(json.getBirthday());
-
-		return user;
+		return User.builder()
+			.ID(UUID.randomUUID().toString())
+			.username(json.getUsername())
+			.email(json.getEmail())
+			.password(json.getPassword())
+			.birthday(json.getBirthday()).build();
 	}
 
 	private boolean isBad(UserJson json)
